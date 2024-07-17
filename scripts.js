@@ -1,25 +1,11 @@
-const express = require('express');
-const http = require('http');
-const socketIO = require('socket.io');
+const socket = io();
 
-const app = express();
-const server = http.createServer(app);
-const io = socketIO(server);
+function updateText() {
+  const inputText = document.getElementById("input-text").value;
+  document.getElementById("output").textContent = inputText;
+  socket.emit('text-update', inputText);
+}
 
-app.use(express.static('public'));
-
-io.on('connection', (socket) => {
-  console.log('A user connected');
-
-  socket.on('text-update', (data) => {
-    io.emit('text-update', data);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('A user disconnected');
-  });
-});
-
-server.listen(3000, () => {
-  console.log('Server is running on port 3000');
+socket.on('text-update', (data) => {
+  document.getElementById("output").textContent = data;
 });
